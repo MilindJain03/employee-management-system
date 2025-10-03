@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: employee-management-api
+    env: node
+    region: oregon
+    buildCommand: cd server && npm install
+    startCommand: cd server && node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    
+  - type: web
+    name: employee-management-frontend
+    env: static
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://employee-management-api.onrender.com
