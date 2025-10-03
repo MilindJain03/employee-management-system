@@ -414,71 +414,6 @@ npm run build
 npm run preview
 ```
 
-## Docker Support (Optional)
-
-### Dockerfile for Backend
-
-Create `server/Dockerfile`:
-
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-EXPOSE 4000
-CMD ["npm", "start"]
-```
-
-### Dockerfile for Frontend
-
-Create `client/Dockerfile`:
-
-```dockerfile
-FROM node:18-alpine as build
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-### Docker Compose
-
-Create `docker-compose.yml` in the root:
-
-```yaml
-version: '3.8'
-
-services:
-  server:
-    build: ./server
-    ports:
-      - "4000:4000"
-    volumes:
-      - ./server/src/db:/app/src/db
-    environment:
-      - PORT=4000
-      - DB_PATH=/app/src/db/database.sqlite
-
-  client:
-    build: ./client
-    ports:
-      - "3000:80"
-    depends_on:
-      - server
-```
-
-Run with Docker:
-```bash
-docker-compose up --build
-```
-
 ## Troubleshooting
 
 ### Port Already in Use
@@ -507,10 +442,4 @@ npm run dev
 
 If you encounter CORS issues, ensure the backend is running and the frontend proxy is configured correctly in `vite.config.js`.
 
-## License
 
-ISC
-
-## Author
-
-Employee Management System - Built with ❤️ using Node.js, Express, React, and SQLite
